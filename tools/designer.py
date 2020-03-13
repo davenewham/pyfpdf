@@ -12,7 +12,7 @@
 
 "Visual Template designer for PyFPDF (using wxPython OGL library)"
 
-from __future__ import with_statement
+
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
@@ -151,8 +151,8 @@ class CustomDialog(wx.Dialog):
                 for field in fields:
                     try:
                         values[field] = eval(dlg.textctrls[field].GetValue())
-                    except Exception, e:
-                        msg = wx.MessageDialog(parent, unicode(e),
+                    except Exception as e:
+                        msg = wx.MessageDialog(parent, str(e),
                                "Error in field %s" % field,
                                wx.OK | wx.ICON_INFORMATION
                                )
@@ -369,7 +369,7 @@ class Element(object):
         if self.text:
             dlg.SetValue(self.text)
         if dlg.ShowModal() == wx.ID_OK:
-            self.text = dlg.GetValue().encode("latin1")
+            self.text = dlg.GetValue()
         dlg.Destroy()         
     
     def copy(self):
@@ -441,7 +441,7 @@ class Element(object):
             self.kwargs['text'] = txt
             self.shape.ClearText()
             for line in txt.split('\n'):
-                self.shape.AddText(unicode(line, "latin1"))
+                self.shape.AddText(str(line))
             self.canvas.Refresh(False)
         return self.kwargs['text']
     text = property(text, text)
@@ -464,7 +464,7 @@ class Element(object):
     
     def selected(self, sel=None):
         if sel is not None:
-            print "Setting Select(%s)" % sel
+            print("Setting Select(%s)" % sel)
             self.shape.Select(sel)
         return self.shape.Selected()
     selected = property(selected, selected)
@@ -505,49 +505,28 @@ class AppFrame(wx.Frame):
         self.toolbar = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
 
         artBmp = wx.ArtProvider.GetBitmap
-        self.toolbar.AddSimpleTool(
-            wx.ID_NEW, artBmp(wx.ART_NEW, wx.ART_TOOLBAR, tsize), "New")
-        self.toolbar.AddSimpleTool(
-            wx.ID_OPEN, artBmp(wx.ART_FILE_OPEN, wx.ART_TOOLBAR, tsize), "Open")
-        self.toolbar.AddSimpleTool(
-            wx.ID_SAVE, artBmp(wx.ART_FILE_SAVE, wx.ART_TOOLBAR, tsize), "Save")
-        self.toolbar.AddSimpleTool(
-            wx.ID_SAVEAS, artBmp(wx.ART_FILE_SAVE_AS, wx.ART_TOOLBAR, tsize),
-            "Save As...")
+        self.toolbar.AddTool(wx.ID_NEW, '', wx.Bitmap(artBmp(wx.ART_NEW, wx.ART_TOOLBAR, tsize)), "New")
+        self.toolbar.AddTool(wx.ID_OPEN, '', wx.Bitmap(artBmp(wx.ART_FILE_OPEN, wx.ART_TOOLBAR, tsize)), "Open")
+        self.toolbar.AddTool(wx.ID_SAVE, '', wx.Bitmap(artBmp(wx.ART_FILE_SAVE, wx.ART_TOOLBAR, tsize)), "Save")
+        self.toolbar.AddTool(wx.ID_SAVEAS, '', wx.Bitmap(artBmp(wx.ART_FILE_SAVE_AS, wx.ART_TOOLBAR, tsize)), "Save As")
+        self.toolbar.AddTool(wx.ID_SETUP, '', wx.Bitmap(artBmp(wx.ART_EXECUTABLE_FILE, wx.ART_TOOLBAR, tsize)),
+                             "Template settings")
 
-        self.toolbar.AddSimpleTool(
-            wx.ID_SETUP, artBmp(wx.ART_EXECUTABLE_FILE, wx.ART_TOOLBAR, tsize),
-            "Template settings")
-            
-            
-        #-------
         self.toolbar.AddSeparator()
-        #~ self.toolbar.AddSimpleTool(
-            #~ wx.ID_UNDO, artBmp(wx.ART_UNDO, wx.ART_TOOLBAR, tsize), "Undo")
-        #~ self.toolbar.AddSimpleTool(
-            #~ wx.ID_REDO, artBmp(wx.ART_REDO, wx.ART_TOOLBAR, tsize), "Redo")
-        #~ self.toolbar.AddSeparator()
-        #-------
-        self.toolbar.AddSimpleTool(
-            wx.ID_CUT, artBmp(wx.ART_CUT, wx.ART_TOOLBAR, tsize), "Remove")
-        self.toolbar.AddSimpleTool(
-            wx.ID_COPY, artBmp(wx.ART_COPY, wx.ART_TOOLBAR, tsize), "Duplicate")
-        self.toolbar.AddSimpleTool(
-            wx.ID_PASTE, artBmp(wx.ART_PASTE, wx.ART_TOOLBAR, tsize), "Insert")
-        self.toolbar.AddSimpleTool(
-            wx.ID_REPLACE, artBmp(wx.ART_GO_FORWARD, wx.ART_TOOLBAR, tsize), "Move")
+        self.toolbar.AddTool(wx.ID_CUT, '', wx.Bitmap(artBmp(wx.ART_CUT, wx.ART_TOOLBAR, tsize)), "Remove")
+        self.toolbar.AddTool(wx.ID_COPY, '', wx.Bitmap(artBmp(wx.ART_COPY, wx.ART_TOOLBAR, tsize)), "Duplicate")
+        self.toolbar.AddTool(wx.ID_PASTE, '', wx.Bitmap(artBmp(wx.ART_PASTE, wx.ART_TOOLBAR, tsize)), "Insert")
+        self.toolbar.AddTool(wx.ID_REPLACE, '', wx.Bitmap(artBmp(wx.ART_GO_FORWARD, wx.ART_TOOLBAR, tsize)), "Move")
+
         self.toolbar.AddSeparator()
-        self.toolbar.AddSimpleTool(
-            wx.ID_FIND, artBmp(wx.ART_FIND, wx.ART_TOOLBAR, tsize), "Find")
+        self.toolbar.AddTool(wx.ID_FIND, '', wx.Bitmap(artBmp(wx.ART_FIND, wx.ART_TOOLBAR, tsize)), "Find")
+
         self.toolbar.AddSeparator()
-        self.toolbar.AddSimpleTool(
-            wx.ID_PRINT, artBmp(wx.ART_PRINT, wx.ART_TOOLBAR, tsize), "Print")
-        self.toolbar.AddSimpleTool(
-            wx.ID_ABOUT, artBmp(wx.ART_HELP, wx.ART_TOOLBAR, tsize), "About")
+        self.toolbar.AddTool(wx.ID_PRINT, '', wx.Bitmap(artBmp(wx.ART_PRINT, wx.ART_TOOLBAR, tsize)), "Print")
+        self.toolbar.AddTool(wx.ID_ABOUT, '', wx.Bitmap(artBmp(wx.ART_HELP, wx.ART_TOOLBAR, tsize)), "About")
 
         self.toolbar.Realize()
 
-        #~ self.toolbar.EnableTool(wx.ID_SAVEAS,       False)
         self.toolbar.EnableTool(wx.ID_UNDO,         False)
         self.toolbar.EnableTool(wx.ID_REDO,         False)
         self.toolbar.EnableTool(wx.ID_PRINT,        False)
@@ -566,6 +545,7 @@ class AppFrame(wx.Frame):
             (wx.ID_ABOUT, self.do_about),
             (wx.ID_SETUP, self.do_setup),
         ]
+
         for menu_id, handler in menu_handlers:
             self.Bind(wx.EVT_MENU, handler, id = menu_id)
 
@@ -688,7 +668,7 @@ class AppFrame(wx.Frame):
             defaultDir=os.getcwd(), 
             defaultFile="",
             wildcard="CSV Files (*.csv)|*.csv",
-            style=wx.OPEN | wx.FD_CHANGE_DIR | wx.FD_FILE_MUST_EXIST
+            style=wx.FD_OPEN | wx.FD_CHANGE_DIR | wx.FD_FILE_MUST_EXIST
             )
         
         if dlg.ShowModal() == wx.ID_OK:
@@ -711,7 +691,7 @@ class AppFrame(wx.Frame):
                 tmp = []
                 with open(self.filename) as file:
                     for lno, linea in enumerate(file.readlines()):
-                        if DEBUG: print "processing line", lno, linea
+                        if DEBUG: print("processing line", lno, linea)
                         args = []
                         for i,v in enumerate(linea.split(";")):
                             if not v.startswith("'"): 
@@ -727,7 +707,7 @@ class AppFrame(wx.Frame):
                 
                 # sort by z-order (priority)
                 for args in sorted(tmp, key=lambda t: t[-1]):
-                    if DEBUG: print args
+                    if DEBUG: print(args)
                     self.create_elements(*args)
                 
                 
@@ -745,7 +725,7 @@ class AppFrame(wx.Frame):
             defaultDir=os.getcwd(), 
             defaultFile=self.filename,
             wildcard="CSV Files (*.csv)|*.csv",
-            style=wx.SAVE | wx.FD_OVERWRITE_PROMPT
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
             )
     
         if dlg.ShowModal() == wx.ID_OK:
@@ -767,8 +747,8 @@ class AppFrame(wx.Frame):
             from time import gmtime, strftime
             ts = strftime("%Y%m%d%H%M%S", gmtime())
             os.rename(self.filename, self.filename + ts + ".bak")
-        except Exception, e:
-            if DEBUG: print e
+        except Exception as e:
+            if DEBUG: print(e)
             pass
 
         
@@ -785,7 +765,7 @@ class AppFrame(wx.Frame):
                 defaultDir=os.getcwd(), 
                 defaultFile="template.csv",
                 wildcard="CSV Files (*.csv)|*.csv",
-                style=wx.SAVE 
+                style=wx.FD_SAVE 
                 )
         
             if dlg.ShowModal() == wx.ID_OK:
@@ -848,11 +828,11 @@ class AppFrame(wx.Frame):
             self, 'Enter text to search for',
             'Find Text', '')
         if dlg.ShowModal() == wx.ID_OK:
-            txt = dlg.GetValue().encode("latin1").lower()
+            txt = dlg.GetValue().lower()
             for element in self.elements:
                 if txt in element:
                     element.selected = True
-                    print "Found:", element.name
+                    print("Found:", element.name)
             self.canvas.Refresh(False)
         dlg.Destroy()              
 
@@ -861,7 +841,7 @@ class AppFrame(wx.Frame):
         new_elements = []
         for element in self.elements:
             if element.selected:
-                print "Erasing:", element.name
+                print("Erasing:", element.name)
                 element.selected = False
                 self.canvas.Refresh(False)
                 element.remove()
@@ -881,7 +861,7 @@ class AppFrame(wx.Frame):
             for i in range(1, data['qty']+1):
                 for element in self.elements:
                     if element.selected:
-                        print "Copying:", element.name
+                        print("Copying:", element.name)
                         new_element = element.copy()
                         name = new_element.name
                         if len(name)>2 and name[-2:].isdigit():
@@ -931,7 +911,7 @@ class AppFrame(wx.Frame):
     def move_elements(self, x, y):
         for element in self.elements:
             if element.selected:
-                print "moving", element.name, x, y
+                print("moving", element.name, x, y)
                 element.x = element.x + x
                 element.y = element.y + y
 
@@ -968,7 +948,7 @@ class AppFrame(wx.Frame):
 
 
 if __name__ == "__main__":
-    app = wx.PySimpleApp()
+    app = wx.App()
     ogl.OGLInitialize()
     frame = AppFrame()
     app.MainLoop()

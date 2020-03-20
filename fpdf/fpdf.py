@@ -19,7 +19,13 @@ from datetime import datetime
 from functools import wraps
 import math
 import errno
-import os, sys, zlib, struct, re, tempfile, struct, StringIO
+import os, sys, zlib, struct, re, tempfile, struct
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 
 from .ttfonts import TTFontFile
 from .fonts import fpdf_charwidths

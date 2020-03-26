@@ -997,10 +997,10 @@ class FPDF(object):
     def image(self, name, x=None, y=None, w=0,h=0,type='',link='', is_mask=False, mask_image=None):
         "Put an image on the page"
 
-        if isinstance(name, StringIO.StringIO) or name not in self.images:
+        if isinstance(name, StringIO) or name not in self.images:
             #First use of image, get info
             info = None
-            if not isinstance(name, StringIO.StringIO):
+            if not isinstance(name, StringIO):
                 if(type==''):
                     pos=name.rfind('.')
                     if(not pos):
@@ -1780,7 +1780,7 @@ class FPDF(object):
         "Load external file"
         # by default loading from network is allowed for all images
         if reason == "image":
-            if isinstance(filename, StringIO.StringIO):
+            if isinstance(filename, StringIO):
                 filename.seek(0)
                 f = BytesIO(filename.read())
             elif filename.startswith("http://") or filename.startswith("https://"):

@@ -169,7 +169,12 @@ class Template:
                 pdf.cell(w=x2-x1,h=y2-y1,txt=text,border=0,ln=0,align=align)
             elif multiline:
                 # multiline==True: automatic word - warp
-                pdf.multi_cell(w=x2-x1,h=y2-y1,txt=text,border=0,align=align)
+                # height is the actual height divided by number of lines
+                try:
+                    height = (y2-y1)/len(text.splitlines())
+                except ZeroDivisionError:
+                    height = (y2 - y1)
+                pdf.multi_cell(w=x2-x1,h=height,txt=text,border=0,align=align)
             else:
                 # multiline==False: trim to fit exactly the space defined
                 text = pdf.multi_cell(w=x2-x1, h=y2-y1,
